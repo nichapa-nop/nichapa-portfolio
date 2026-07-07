@@ -1,16 +1,17 @@
 import Reveal from "./Reveal";
+import TerminalWindow, { Prompt } from "./TerminalWindow";
 import { profile } from "@/data/portfolio";
 
 export default function Contact() {
   const links = [
-    { label: "Email", value: profile.email, href: `mailto:${profile.email}` },
+    { key: "email", value: profile.email, href: `mailto:${profile.email}` },
     {
-      label: "Phone",
+      key: "phone",
       value: profile.phone,
       href: `tel:${profile.phone.replace(/-/g, "")}`,
     },
     {
-      label: "LinkedIn",
+      key: "linkedin",
       value: profile.linkedinLabel,
       href: profile.linkedin,
       external: true,
@@ -18,65 +19,48 @@ export default function Contact() {
   ];
 
   return (
-    <section id="contact" className="scroll-mt-16 bg-ink text-paper">
-      <div className="mx-auto max-w-6xl px-6 py-28">
-        <Reveal>
-          <p
-            className="mono text-xs uppercase tracking-[0.2em]"
-            style={{ color: "var(--paper-2)" }}
-          >
-            ({"05"}) — Contact
-          </p>
-          <h2 className="mt-6 font-display text-5xl font-light leading-[0.95] tracking-tight sm:text-8xl">
-            Let&apos;s build
-            <br />
-            <span className="italic">something.</span>
-          </h2>
-          <p
-            className="mono mt-8 max-w-md text-sm"
-            style={{ color: "var(--paper-2)" }}
-          >
-            {profile.availability}
-          </p>
-        </Reveal>
+    <section id="contact" className="mx-auto max-w-5xl scroll-mt-20 px-4 py-12">
+      <Reveal>
+        <TerminalWindow title="visitor@nichapa: ~/contact">
+          <Prompt command="./contact.sh" flags="--hire" />
 
-        <Reveal delay={0.1}>
-          <div className="mt-14 grid gap-px border border-line/20 sm:grid-cols-3">
+          <p className="mb-1 text-green">
+            ✓ available — {profile.availability}
+          </p>
+          <p className="mb-6 text-muted"># reach me on any channel below</p>
+
+          <div className="max-w-2xl space-y-1 text-sm">
             {links.map((l) => (
               <a
-                key={l.label}
+                key={l.key}
                 href={l.href}
                 target={l.external ? "_blank" : undefined}
                 rel="noreferrer"
-                className="group flex flex-col gap-2 p-6 transition-colors hover:bg-white/5"
+                className="group flex flex-wrap items-baseline gap-x-2 py-1"
               >
-                <span
-                  className="mono text-xs uppercase tracking-widest"
-                  style={{ color: "var(--paper-2)" }}
-                >
-                  {l.label}
-                </span>
-                <span className="font-display text-lg font-light">
+                <span className="w-24 shrink-0 text-amber">{l.key}</span>
+                <span className="text-muted">→</span>
+                <span className="link-underline text-ink group-hover:text-accent">
                   {l.value}
-                </span>
-                <span className="mono mt-1 text-xs text-accent opacity-0 transition-opacity group-hover:opacity-100">
-                  →
                 </span>
               </a>
             ))}
           </div>
-        </Reveal>
-      </div>
 
-      <div
-        className="mono flex flex-wrap items-center justify-between gap-2 border-t border-line/20 px-6 py-5 text-xs uppercase tracking-widest"
-        style={{ color: "var(--paper-2)" }}
-      >
-        <span>
-          © {new Date().getFullYear()} {profile.name}
-        </span>
-        <span>Built with Next.js · Set in Fraunces</span>
-      </div>
+          <div className="mt-8">
+            <Prompt command="echo" flags='"let’s build something."' />
+            <p className="text-2xl text-accent sm:text-4xl">
+              let&apos;s build something.
+              <span className="cursor" />
+            </p>
+          </div>
+
+          <p className="mt-10 border-t border-line pt-4 text-xs text-muted">
+            © {new Date().getFullYear()} {profile.name} — built with Next.js ·
+            no templates, hand-coded
+          </p>
+        </TerminalWindow>
+      </Reveal>
     </section>
   );
 }

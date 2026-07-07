@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { navLinks, profile } from "@/data/portfolio";
+import { navLinks } from "@/data/portfolio";
 
 export default function Nav() {
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
+  const [clock, setClock] = useState("");
 
   useEffect(() => {
     let last = window.scrollY;
@@ -15,59 +16,68 @@ export default function Nav() {
       last = y;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+
+    const tick = () =>
+      setClock(
+        new Date().toLocaleTimeString("en-GB", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      );
+    tick();
+    const id = setInterval(tick, 1000 * 30);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearInterval(id);
+    };
   }, []);
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 border-b border-line bg-paper/85 backdrop-blur-sm transition-transform duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 border-b border-line bg-paper-3/95 backdrop-blur transition-transform duration-300 ${
         hidden ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
-        <a href="#" className="font-display text-lg italic tracking-tight">
-          Nichapa<span className="text-accent">.</span>
+      <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-2 text-xs">
+        <a href="#" className="flex items-center gap-2">
+          <span className="text-accent">➜</span>
+          <span className="text-green">~/nichapa</span>
+          <span className="hidden text-muted sm:inline">(main)</span>
         </a>
 
-        <ul className="hidden items-center gap-8 md:flex">
+        <ul className="hidden items-center gap-5 md:flex">
           {navLinks.map((l) => (
             <li key={l.href}>
               <a
                 href={l.href}
-                className="mono link-underline text-xs uppercase tracking-widest text-ink-soft"
+                className="link-underline text-ink-soft transition-colors hover:text-ink"
               >
-                {l.label}
+                ./{l.label.toLowerCase()}
               </a>
             </li>
           ))}
+          <li className="text-muted">[{clock}]</li>
         </ul>
 
-        <a
-          href="#contact"
-          className="mono hidden items-center gap-2 rounded-full border border-ink px-4 py-1.5 text-xs uppercase tracking-widest transition-colors hover:bg-ink hover:text-paper md:inline-flex"
-        >
-          Available
-          <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-        </a>
-
         <button
-          className="mono text-xs uppercase tracking-widest md:hidden"
+          className="text-ink-soft md:hidden"
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? "Close" : "Menu"}
+          {open ? "[x] close" : "[≡] menu"}
         </button>
       </nav>
 
       {open && (
-        <ul className="flex flex-col border-t border-line bg-paper px-6 py-2 md:hidden">
+        <ul className="border-t border-line bg-paper-2 px-4 py-1 text-xs md:hidden">
           {navLinks.map((l) => (
             <li key={l.href} className="border-b border-line last:border-0">
               <a
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="mono block py-3 text-sm uppercase tracking-widest"
+                className="block py-2.5 text-ink-soft"
               >
-                {l.label}
+                <span className="text-accent">➜</span> ./{l.label.toLowerCase()}
               </a>
             </li>
           ))}

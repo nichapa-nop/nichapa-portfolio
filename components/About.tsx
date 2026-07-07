@@ -1,37 +1,37 @@
-import SectionHeading from "./SectionHeading";
 import Reveal from "./Reveal";
+import TerminalWindow, { Prompt } from "./TerminalWindow";
 import { profile } from "@/data/portfolio";
 
-const facts = [
-  ["Experience", "1 year, in production"],
-  ["Base", profile.location],
-  ["Focus", "Fullstack + AI"],
-  ["Status", "Open to work"],
+const facts: [string, string][] = [
+  ["role", profile.role],
+  ["experience", "1 year · production"],
+  ["location", profile.location],
+  ["focus", "Fullstack + AI"],
+  ["status", "open to work"],
 ];
 
 export default function About() {
   return (
-    <section id="about" className="mx-auto max-w-6xl scroll-mt-16 px-6 py-24">
-      <SectionHeading index="01" title="About" />
+    <section id="about" className="mx-auto max-w-5xl scroll-mt-20 px-4 py-12">
+      <Reveal>
+        <TerminalWindow title="visitor@nichapa: ~/about">
+          <Prompt command="cat" flags="about.md" />
+          <p className="mb-6 max-w-3xl text-ink-soft">{profile.about}</p>
 
-      <div className="grid gap-12 md:grid-cols-12">
-        <Reveal className="md:col-span-7">
-          <p className="font-display text-2xl font-light leading-snug sm:text-[2rem] sm:leading-[1.3]">
-            {profile.about}
-          </p>
-        </Reveal>
-
-        <Reveal delay={0.15} className="md:col-span-4 md:col-start-9">
-          <dl className="divide-y divide-line border-y border-line">
+          <Prompt command="whoami" flags="--stats" />
+          <dl className="grid max-w-xl gap-x-6 gap-y-1 sm:grid-cols-[8rem_1fr]">
             {facts.map(([k, v]) => (
-              <div key={k} className="flex items-baseline justify-between py-3">
-                <dt className="eyebrow">{k}</dt>
-                <dd className="mono text-right text-sm text-ink">{v}</dd>
+              <div key={k} className="contents">
+                <dt className="text-amber">{k}</dt>
+                <dd className="text-ink-soft">
+                  <span className="text-muted">: </span>
+                  {v}
+                </dd>
               </div>
             ))}
           </dl>
-        </Reveal>
-      </div>
+        </TerminalWindow>
+      </Reveal>
     </section>
   );
 }

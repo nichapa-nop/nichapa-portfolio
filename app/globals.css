@@ -1,30 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  /* Editorial paper palette */
-  --paper: #f4f1e9;
-  --paper-2: #eae5d8;
-  --ink: #1c1a17;
-  --ink-soft: #4a463f;
-  --muted: #8a8578;
-  --line: #d8d2c3;
-  --accent: #d6431a; /* vermillion */
-  --accent-ink: #b5350f;
+  /* Warm dark terminal palette (from the old Contact section) */
+  --paper: #15120f; /* page background */
+  --paper-2: #1d1915; /* window / panel background */
+  --paper-3: #26211b; /* header bar */
+  --ink: #ece6d9; /* primary text (cream) */
+  --ink-soft: #b7b0a1; /* secondary text */
+  --muted: #7d746343; /* faint */
+  --muted-solid: #837a68;
+  --line: #322c25; /* borders */
+  --accent: #ff5c33; /* vermillion — prompts & highlights */
+  --accent-ink: #ff7a57; /* hover / brighter */
+  --green: #8fbf7f; /* terminal ok */
+  --amber: #e0a24e; /* terminal warn */
 }
 
 @theme inline {
   --color-paper: var(--paper);
   --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
-  --color-muted: var(--muted);
+  --color-muted: var(--muted-solid);
   --color-line: var(--line);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-green: var(--green);
+  --color-amber: var(--amber);
 
-  --font-display: var(--font-display), Georgia, "Times New Roman", serif;
+  --font-display: var(--font-display), Georgia, serif;
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, Menlo, monospace;
+  --font-mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 * {
@@ -33,27 +40,45 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 4rem;
+  scroll-padding-top: 5rem;
 }
 
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-sans);
-  font-feature-settings: "cv11", "ss01";
+  font-family: var(--font-mono);
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Subtle paper grain so the flat color reads as a printed page */
+/* Faint CRT scanlines + vignette so the whole page reads as a screen */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 60;
   pointer-events: none;
-  opacity: 0.5;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.14) 3px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  opacity: 0.35;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 59;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 120% at 50% 40%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
 }
 
 .font-display {
@@ -61,33 +86,80 @@ body::before {
   font-optical-sizing: auto;
 }
 
-.mono {
-  font-family: var(--font-mono);
+/* ── Terminal window ─────────────────────────────── */
+.term {
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--paper-2);
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+}
+.term-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--paper-3);
+  border-bottom: 1px solid var(--line);
+}
+.term-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 9999px;
+}
+.term-title {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--muted-solid);
+  letter-spacing: 0.02em;
+}
+.term-body {
+  padding: 1.25rem 1.4rem;
+  line-height: 1.75;
 }
 
-/* Section index label: 01 / ABOUT */
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
+/* prompt token: renders "visitor@nichapa ~ $" style */
+.prompt {
+  color: var(--green);
+}
+.prompt::before {
+  content: "➜ ";
+  color: var(--accent);
+}
+.cmd {
+  color: var(--ink);
+}
+.flag {
+  color: var(--amber);
+}
+.comment {
+  color: var(--muted-solid);
 }
 
-/* Editorial link underline that draws on hover */
+/* blinking block cursor */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.cursor::after {
+  content: "█";
+  margin-left: 1px;
+  color: var(--accent);
+  animation: blink 1s step-end infinite;
+}
+
 .link-underline {
   background-image: linear-gradient(var(--accent), var(--accent));
   background-position: 0 100%;
   background-repeat: no-repeat;
   background-size: 0% 1.5px;
-  transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background-size 0.3s ease;
   padding-bottom: 1px;
 }
 .link-underline:hover {
   background-size: 100% 1.5px;
 }
 
-/* Marquee ticker */
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -95,15 +167,10 @@ body::before {
 .marquee-track {
   display: inline-flex;
   white-space: nowrap;
-  animation: marquee 32s linear infinite;
+  animation: marquee 30s linear infinite;
 }
 
 ::selection {
   background: var(--accent);
   color: var(--paper);
-}
-
-.rule {
-  height: 1px;
-  background: var(--line);
 }

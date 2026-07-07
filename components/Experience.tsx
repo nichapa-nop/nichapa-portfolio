@@ -1,66 +1,65 @@
-import SectionHeading from "./SectionHeading";
 import Reveal from "./Reveal";
+import TerminalWindow, { Prompt } from "./TerminalWindow";
 import { experience } from "@/data/portfolio";
+
+// pseudo commit hashes for the git-log aesthetic
+const hashes = ["a1f9c2e", "7b3d081", "e4c65aa"];
 
 export default function Experience() {
   return (
-    <section id="work" className="mx-auto max-w-6xl scroll-mt-16 px-6 py-24">
-      <SectionHeading index="02" title="Work" />
+    <section id="work" className="mx-auto max-w-5xl scroll-mt-20 px-4 py-12">
+      <Reveal>
+        <TerminalWindow title="visitor@nichapa: ~/work">
+          <Prompt command="git log" flags="--stat --author=nichapa" />
 
-      <div className="border-t border-line">
-        {experience.map((exp, i) => (
-          <Reveal key={exp.company} delay={i * 0.05}>
-            <article className="group grid gap-6 border-b border-line py-10 md:grid-cols-12">
-              <div className="md:col-span-3">
-                <p className="mono flex items-center gap-2 text-sm text-ink-soft">
+          <div className="space-y-8">
+            {experience.map((exp, i) => (
+              <article key={exp.company} className="text-sm">
+                <p className="flex flex-wrap items-center gap-x-2">
+                  <span className="text-amber">commit {hashes[i]}</span>
                   {exp.current && (
-                    <span className="h-2 w-2 rounded-full bg-accent" />
+                    <span className="text-green">(HEAD → main)</span>
                   )}
+                </p>
+                <p className="text-muted">
+                  Date:{"   "}
                   {exp.period}
                 </p>
-              </div>
-
-              <div className="md:col-span-9">
-                <h3 className="font-display text-3xl font-light leading-tight">
+                <p className="mt-2 text-ink">
+                  <span className="text-accent">▸ </span>
                   {exp.role}
-                </h3>
-                <p className="mono mt-1 text-sm uppercase tracking-widest text-accent-ink">
-                  {exp.company}
+                  <span className="text-muted"> @ </span>
+                  <span className="text-ink-soft">{exp.company}</span>
                 </p>
 
                 {exp.summary && (
-                  <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink-soft">
+                  <p className="mt-2 max-w-2xl pl-5 text-ink-soft">
                     {exp.summary}
                   </p>
                 )}
 
-                <ul className="mt-4 max-w-2xl space-y-2">
+                <ul className="mt-2 space-y-1 pl-5">
                   {exp.points.map((p) => (
-                    <li
-                      key={p}
-                      className="flex gap-3 text-[0.95rem] leading-relaxed text-ink-soft"
-                    >
-                      <span className="mt-1 select-none text-accent">—</span>
-                      <span>{p}</span>
+                    <li key={p} className="max-w-2xl text-ink-soft">
+                      <span className="text-green">+ </span>
+                      {p}
                     </li>
                   ))}
                 </ul>
 
-                <div className="mt-5 flex flex-wrap gap-x-4 gap-y-1">
-                  {exp.stack.map((s) => (
-                    <span
-                      key={s}
-                      className="mono text-xs uppercase tracking-wider text-muted"
-                    >
-                      {s}
+                <p className="mt-3 pl-5 text-xs text-muted">
+                  {exp.stack.map((s, si) => (
+                    <span key={s}>
+                      {si > 0 && <span className="text-muted"> · </span>}
+                      <span className="text-amber">{s}</span>
                     </span>
                   ))}
-                </div>
-              </div>
-            </article>
-          </Reveal>
-        ))}
-      </div>
+                </p>
+              </article>
+            ))}
+          </div>
+        </TerminalWindow>
+      </Reveal>
     </section>
   );
 }
