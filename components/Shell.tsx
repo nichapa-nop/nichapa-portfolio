@@ -16,6 +16,8 @@ export default function Shell({ children }: { children: ReactNode }) {
   }, [opened]);
 
   function open() {
+    // always reveal the terminal from the very top (instant, not smooth)
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
     setOpened(true);
   }
 
