@@ -1,3 +1,4 @@
+import Shell from "@/components/Shell";
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
 import Marquee from "@/components/Marquee";
@@ -9,7 +10,7 @@ import Contact from "@/components/Contact";
 
 export default function Home() {
   return (
-    <>
+    <Shell>
       <Nav />
       <main>
         <Hero />
@@ -20,6 +21,6 @@ export default function Home() {
         <Education />
         <Contact />
       </main>
-    </>
+    </Shell>
   );
 }
