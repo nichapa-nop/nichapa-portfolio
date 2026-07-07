@@ -11,7 +11,9 @@ export const profile = {
   phone: "064-998-7461",
   linkedin: "https://www.linkedin.com/in/nichapa-nopparat-603737249",
   linkedinLabel: "linkedin.com/in/nichapa-nopparat",
-  github: "https://github.com/",
+  github: "https://github.com/nichapa-nop",
+  githubLabel: "github.com/nichapa-nop",
+  resume: "https://nichapa-nop-portfolio.my.canva.site/resume",
   availability: "Open to Fullstack · Frontend · Backend · AI Engineer roles",
 };
 
