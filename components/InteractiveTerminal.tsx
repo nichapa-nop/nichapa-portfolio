@@ -61,6 +61,22 @@ export default function InteractiveTerminal() {
   const [input, setInput] = useState("");
   const [past, setPast] = useState<string[]>([]);
   const [pastIdx, setPastIdx] = useState(-1);
+  const [minimized, setMinimized] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+
+  // lock scroll + close on Esc while fullscreen
+  useEffect(() => {
+    if (!fullscreen) return;
+    const onKey = (e: WindowEventMap["keydown"]) => {
+      if (e.key === "Escape") setFullscreen(false);
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [fullscreen]);
 
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -399,22 +415,94 @@ export default function InteractiveTerminal() {
   const chips = ["help", "about", "work", "skills", "contact"];
 
   return (
-    <div
-      className="term cursor-text"
-      onClick={() => inputRef.current?.focus()}
-    >
-      <div className="term-bar">
-        <span className="term-dot" style={{ background: "var(--accent)" }} />
-        <span className="term-dot" style={{ background: "var(--amber)" }} />
-        <span className="term-dot" style={{ background: "var(--green)" }} />
-        <span className="term-title">
-          visitor@nichapa: ~/portfolio — zsh — interactive
-        </span>
-      </div>
+    <>
+      {fullscreen && (
+        <div
+          className="fixed inset-0 z-[89] bg-black/70 backdrop-blur-sm"
+          onClick={() => setFullscreen(false)}
+          aria-hidden="true"
+        />
+      )}
 
       <div
+        className={`term cursor-text ${
+          fullscreen
+            ? "fixed inset-3 z-[90] flex flex-col sm:inset-6"
+            : ""
+        }`}
+        onClick={() => inputRef.current?.focus()}
+      >
+        <div
+          className="term-bar cursor-pointer select-none"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!fullscreen) setMinimized((m) => !m);
+          }}
+          title={minimized ? "Click to expand" : "Click to minimize"}
+        >
+          <div className="group/dots flex items-center gap-2">
+            <span
+              className="term-dot"
+              style={{ background: "var(--accent)" }}
+              onClick={(e) => e.stopPropagation()}
+              aria-hidden="true"
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (fullscreen) {
+                  setFullscreen(false);
+                  setMinimized(true);
+                } else {
+                  setMinimized((m) => !m);
+                }
+              }}
+              aria-label="Minimize"
+              title="Minimize"
+              className="term-dot grid cursor-pointer place-items-center text-[9px] leading-none text-black/55"
+              style={{ background: "var(--amber)" }}
+            >
+              <span className="opacity-0 transition-opacity group-hover/dots:opacity-100">
+                −
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setFullscreen((f) => !f);
+              }}
+              aria-label="Toggle fullscreen"
+              title="Fullscreen"
+              className="term-dot grid cursor-pointer place-items-center text-[8px] leading-none text-black/55"
+              style={{ background: "var(--green)" }}
+            >
+              <span className="opacity-0 transition-opacity group-hover/dots:opacity-100">
+                {fullscreen ? "⤡" : "⤢"}
+              </span>
+            </button>
+          </div>
+          <span className="term-title">
+            visitor@nichapa: ~/portfolio — zsh — interactive
+          </span>
+          {minimized && (
+            <span className="mono ml-auto text-xs text-muted">
+              — minimized · click to open
+            </span>
+          )}
+          {fullscreen && (
+            <span className="mono ml-auto text-xs text-muted">esc to close</span>
+          )}
+        </div>
+
+        {!minimized && (
+          <>
+      <div
         ref={bodyRef}
-        className="term-body max-h-[62vh] min-h-[420px] overflow-y-auto"
+        className={`term-body overflow-y-auto ${
+          fullscreen ? "min-h-0 flex-1" : "max-h-[62vh] min-h-[420px]"
+        }`}
       >
         {history.map((e, i) => (
           <div key={i} className="mb-3">
@@ -464,6 +552,9 @@ export default function InteractiveTerminal() {
           </button>
         ))}
       </div>
-    </div>
+          </>
+        )}
+      </div>
+    </>
   );
 }

@@ -20,7 +20,7 @@ export default function Marquee() {
       <div className="marquee-track">
         {row.map((t, i) => (
           <span key={i} className="mx-4 text-ink-soft">
-            <span className="text-green">$</span> {t}
+            {t}
             <span className="ml-4 text-accent">•</span>
           </span>
         ))}
